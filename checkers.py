@@ -1,29 +1,38 @@
 """This module is for a game of checkers."""
-
 import tkinter as tk
 
-window = tk.Tk()
-window.geometry("800x800")
-window.title("Checkers")
 
-canvas = tk.Canvas(window, width=800, height=800)
+def main():
+    """Run the main process."""
 
-top_left = (0, 0)
-bot_right = (400, 400)
-canvas.create_rectangle(*top_left,  *bot_right, fill="black")
+    board_size = 800
+    grid_size = 8
 
-top_left = (400, 0)
-bot_right = (800, 400)
-canvas.create_rectangle(*top_left,  *bot_right, fill="red")
+    square_length = board_size / grid_size
 
-top_left = (0, 400)
-bot_right = (400, 800)
-canvas.create_rectangle(*top_left,  *bot_right, fill="red")
+    window = tk.Tk()
+    window.geometry(f"{board_size}x{board_size}")
+    window.title("Checkers")
 
-top_left = (400, 400)
-bot_right = (800, 800)
-canvas.create_rectangle(*top_left,  *bot_right, fill="black")
+    canvas = tk.Canvas(window, width=board_size, height=board_size)
 
-canvas.pack()
+    for row in range(grid_size):
+        for col in range(grid_size):
+            if (row + col) % 2 == 0:
+                color = "black"
+            else:
+                color = "red"
 
-window.mainloop()
+            row1 = row * square_length
+            col1 = col * square_length
+            row2 = row1 + square_length
+            col2 = col1 + square_length
+            canvas.create_rectangle(row1, col1, row2, col2, fill = color)
+
+    canvas.pack()
+
+    window.mainloop()
+
+
+if __name__ == "__main__":
+    main()
