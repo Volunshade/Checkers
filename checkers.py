@@ -8,21 +8,18 @@ window.title("Checkers")
 
 canvas = tk.Canvas(window, width=800, height=800)
 
-top_left = (0, 0)
-bot_right = (400, 400)
-canvas.create_rectangle(*top_left,  *bot_right, fill="black")
+for row in range(8):
+    for column in range(8):
+        if (row + column) % 2 == 0:
+            color = "black"
+        else:
+            color = "red"
 
-top_left = (400, 0)
-bot_right = (800, 400)
-canvas.create_rectangle(*top_left,  *bot_right, fill="red")
-
-top_left = (0, 400)
-bot_right = (400, 800)
-canvas.create_rectangle(*top_left,  *bot_right, fill="red")
-
-top_left = (400, 400)
-bot_right = (800, 800)
-canvas.create_rectangle(*top_left,  *bot_right, fill="black")
+        row1 = row*100
+        column1 = column*100
+        row2 = row1+100
+        column2 = column1+100
+        canvas.create_rectangle(row1, column1, row2, column2, fill = color)
 
 canvas.pack()
 
