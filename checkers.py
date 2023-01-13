@@ -37,7 +37,30 @@ class Board(tk.Canvas):
 
                 self.create_rectangle(row1, col1, row2, col2, fill=color)
 
+    def draw_pieces(self):
+        """Initialize the game pieces."""
 
+        for row in range(64):
+            for col in range(self.grid_size):
+                if (row + col) % 2 == 0:
+                    color = "black"
+                else:
+                    color = "red"
+
+                row1 = row * self.square_length
+                col1 = col * self.square_length
+
+                row2 = row1 + self.square_length
+                col2 = col1 + self.square_length
+
+                if row < 3 and color == "black":
+                    self.create_oval(col1 + self.square_length / 4, row1 + self.square_length / 4,
+                                     col2 - self.square_length / 4, row2 - self.square_length / 4,
+                                     fill= "yellow")
+                elif row > 4 and color == "black":
+                    self.create_oval(col1 + self.square_length / 4, row1 + self.square_length / 4,
+                                     col2 - self.square_length / 4, row2 - self.square_length / 4,
+                                     fill= "blue")
 def main():
     """Run the main process."""
 
@@ -50,6 +73,7 @@ def main():
     kwargs = {"width": board_size, "height": board_size}
     board = Board(window, board_size, **kwargs)
     board.draw_squares()
+    board.draw_pieces()
     board.pack()
 
     window.mainloop()
