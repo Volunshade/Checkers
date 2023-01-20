@@ -6,6 +6,14 @@ from typing import Dict
 class Square:
     """Contains the logic for a square on a Checkers game board."""
 
+    square_length = -1.0
+
+    @classmethod
+    def update_square_length(cls, new_square_length: float) -> None:
+        """Update square length for all square instances."""
+
+        cls.square_length = new_square_length
+
     def __init__(self, row: int, col: int, color: str) -> None:
         """Initialize a new instance"""
 
@@ -13,9 +21,22 @@ class Square:
         self.col = col
         self.color = color
 
+    def draw(self, canvas: tk.Canvas) -> None:
+        """Drawing a square on a canvas."""
+
+        row1 = self.row * self.square_length
+        col1 = self.col * self.square_length
+
+        row2 = row1 + self.square_length
+        col2 = col1 + self.square_length
+
+        canvas.create_rectangle(row1, col1, row2, col2, fill=self.color)
+
 
 class Piece:
     """Contains the logic for a piece on a Checkers game board."""
+
+    piece_scalar = 20
 
     def __init__(self, row: int, col: int, color: str):
         """Initialize a new instance"""
@@ -24,11 +45,26 @@ class Piece:
         self.col = col
         self.color = color
 
+    def draw(self, canvas: tk.Canvas) -> None:
+        """Drawing a piece on a canvas."""
+
+        offset_decimal = self.piece_scalar / Square.square_length
+        offset = Square.square_length * offset_decimal
+        half_offset = offset / 2
+
+        row1 = self.row * Square.square_length + half_offset
+        col1 = self.col * Square.square_length + half_offset
+
+        row2 = row1 + Square.square_length - offset
+        col2 = col1 + Square.square_length - offset
+
+        canvas.create_oval(col1, row1, col2, row2, fill=self.color)
+
 class Board(tk.Canvas):
     """Contains the logic for the Checkers game board."""
 
     grid_size = 8
-    piece_scalar = 20
+
 
     def __init__(self,
                  master: tk.Tk,
@@ -39,7 +75,10 @@ class Board(tk.Canvas):
 
         super().__init__(master, **kwargs)
 
-        self.square_length = board_size / self.grid_size
+        self.bind("<Button-1>", self.left_click)
+
+        _square_length = board_size / self.grid_size
+        Square.update_square_length(_square_length)
 
         self.squares = self.init_squares()
         self.pieces = self.init_pieces()
@@ -53,33 +92,19 @@ class Board(tk.Canvas):
         """Initialize the board squares."""
 
         for square in self.squares:
-            row1 = square.row * self.square_length
-            col1 = square.col * self.square_length
-
-            row2 = row1 + self.square_length
-            col2 = col1 + self.square_length
-
-            self.create_rectangle(row1, col1, row2, col2, fill=square.color)
+            square.draw(self)
 
     def draw_pieces(self):
         """Initialize the game pieces."""
 
-        offset_decimal = self.piece_scalar / self.square_length
-        offset = self.square_length * offset_decimal
-        half_offset = offset / 2
+        for piece in self.pieces:
+            piece.draw(self)
 
-        for row in range(64):
-            for col in range(self.grid_size):
-                if (row < 3 or row > 4) and not (row + col) % 2:
-                    row1 = row * self.square_length + half_offset
-                    col1 = col * self.square_length + half_offset
+    def left_click(self, event: tk.Event) ->  None:
+        """Callback function for the board left click event."""
 
-                    row2 = row1 + self.square_length - offset
-                    col2 = col1 + self.square_length - offset
-
-                    color = "yellow" if row < 3 else "cyan"
-
-                    self.create_oval(col1, row1, col2, row2, fill=color)
+        print(event.x, event.y)
+        pass
 
     @staticmethod
     def init_squares():
@@ -103,13 +128,12 @@ class Board(tk.Canvas):
         """Initialize the board pieces."""
 
         pieces = []
-        for row in range(64):
+        for row in range(Board.grid_size):
             for col in range(Board.grid_size):
                 if (row < 3 or row > 4) and not (row + col) % 2:
                     color = "yellow" if row < 3 else "cyan"
-
-                piece = Piece(row, col, color)
-                pieces.append(piece)
+                    piece = Piece(row, col, color)
+                    pieces.append(piece)
 
         return pieces
 
@@ -120,7 +144,6 @@ def main():
     board_size = 1080
 
     window = tk.Tk()
-    window.geometry(f"{board_size}x{board_size}")
     window.title("Checkers")
 
     kwargs = {"width": board_size, "height": board_size}
