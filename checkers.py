@@ -2,63 +2,9 @@
 import tkinter as tk
 from typing import Dict
 
+from square import Square
+from piece import Piece
 
-class Square:
-    """Contains the logic for a square on a Checkers game board."""
-
-    square_length = -1.0
-
-    @classmethod
-    def update_square_length(cls, new_square_length: float) -> None:
-        """Update square length for all square instances."""
-
-        cls.square_length = new_square_length
-
-    def __init__(self, row: int, col: int, color: str) -> None:
-        """Initialize a new instance"""
-
-        self.row = row
-        self.col = col
-        self.color = color
-
-    def draw(self, canvas: tk.Canvas) -> None:
-        """Drawing a square on a canvas."""
-
-        row1 = self.row * self.square_length
-        col1 = self.col * self.square_length
-
-        row2 = row1 + self.square_length
-        col2 = col1 + self.square_length
-
-        canvas.create_rectangle(row1, col1, row2, col2, fill=self.color)
-
-
-class Piece:
-    """Contains the logic for a piece on a Checkers game board."""
-
-    piece_scalar = 20
-
-    def __init__(self, row: int, col: int, color: str):
-        """Initialize a new instance"""
-
-        self.row = row
-        self.col = col
-        self.color = color
-
-    def draw(self, canvas: tk.Canvas) -> None:
-        """Drawing a piece on a canvas."""
-
-        offset_decimal = self.piece_scalar / Square.square_length
-        offset = Square.square_length * offset_decimal
-        half_offset = offset / 2
-
-        row1 = self.row * Square.square_length + half_offset
-        col1 = self.col * Square.square_length + half_offset
-
-        row2 = row1 + Square.square_length - offset
-        col2 = col1 + Square.square_length - offset
-
-        canvas.create_oval(col1, row1, col2, row2, fill=self.color)
 
 class Board(tk.Canvas):
     """Contains the logic for the Checkers game board."""
@@ -73,12 +19,16 @@ class Board(tk.Canvas):
                  ) -> None:
         """Initialize a new instance."""
 
+        self.board_size = board_size
+
         super().__init__(master, **kwargs)
 
         self.bind("<Button-1>", self.left_click)
 
         _square_length = board_size / self.grid_size
-        Square.update_square_length(_square_length)
+        self.side_length = board_size / self.grid_size
+        Square.update_side_length(_square_length)
+        Piece.update_side_length(_square_length)
 
         self.squares = self.init_squares()
         self.pieces = self.init_pieces()
@@ -103,7 +53,11 @@ class Board(tk.Canvas):
     def left_click(self, event: tk.Event) ->  None:
         """Callback function for the board left click event."""
 
-        print(event.x, event.y)
+
+
+        col = int(event.x // self.side_length)
+        row = int(event.y // self.side_length)
+        print(event.x, col, " -> ", event.y, row)
         pass
 
     @staticmethod
@@ -130,7 +84,7 @@ class Board(tk.Canvas):
         pieces = []
         for row in range(Board.grid_size):
             for col in range(Board.grid_size):
-                if (row < 3 or row > 4) and not (row + col) % 2:
+                if (row < 3 or row > (Board.grid_size - 4)) and not (row + col) % 2:
                     color = "yellow" if row < 3 else "cyan"
                     piece = Piece(row, col, color)
                     pieces.append(piece)
@@ -141,7 +95,7 @@ class Board(tk.Canvas):
 def main():
     """Run the main process."""
 
-    board_size = 1080
+    board_size = 800
 
     window = tk.Tk()
     window.title("Checkers")
