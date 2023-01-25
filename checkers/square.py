@@ -1,5 +1,8 @@
 """This module is for squares on a checkerboard."""
+import logging
 import tkinter as tk
+
+logger = logging.getLogger(__name__)
 
 
 class Square:

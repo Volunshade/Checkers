@@ -1,10 +1,13 @@
 """This module is for a game of checkers."""
 import json
+import logging
 import tkinter as tk
 from typing import Dict
 
 from checkers.square import Square
 from checkers.piece import Piece
+
+logger = logging.getLogger(__name__)
 
 
 class Board(tk.Canvas):
@@ -12,13 +15,14 @@ class Board(tk.Canvas):
 
     grid_size = 8
 
-
     def __init__(self,
                  master: tk.Tk,
                  board_size: int,
                  **kwargs: Dict[str, int]
                  ) -> None:
         """Initialize a new instance."""
+
+        logger.info("Initializing a Board object.")
 
         self.board_size = board_size
 
@@ -62,6 +66,8 @@ class Board(tk.Canvas):
     def left_click(self, event: tk.Event) ->  None:
         """Callback function for the board left click event."""
 
+        logger.info(f"Left-click event captured, x={event.x} and y={event.y}")
+
         col = int(event.x // self.side_length)
         row = int(event.y // self.side_length)
 
@@ -80,7 +86,7 @@ class Board(tk.Canvas):
         output["col"] = col
         output["row"] = row
 
-        print(json.dumps(output, indent=2))
+        logger.info(json.dumps(output, indent=2))
 
     @staticmethod
     def init_squares():
