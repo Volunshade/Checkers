@@ -2,8 +2,8 @@
 import tkinter as tk
 from typing import Dict
 
-from square import Square
-from piece import Piece
+from checkers.square import Square
+from checkers.piece import Piece
 
 
 class Board(tk.Canvas):
